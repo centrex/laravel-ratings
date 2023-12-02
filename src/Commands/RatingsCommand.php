@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace VendorName\Skeleton\Commands;
+namespace Centrex\Ratings\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class RatingsCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'ratings';
 
     public $description = 'My command';
 

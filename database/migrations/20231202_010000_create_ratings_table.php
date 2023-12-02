@@ -8,11 +8,11 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('migration_table_name_table', function (Blueprint $table) {
+        Schema::create('ratings', function (Blueprint $table) {
             $table->id();
-
-            // add fields
-
+            $table->morphs('rateable');
+            $table->foreignId((string) config(key: 'ratings.users.primary_key', default: 'user_id'))->nullable()->constrained()->nullOnDelete();
+            $table->integer('rating');
             $table->timestamps();
         });
     }
@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('migration_table_name_table');
+        Schema::dropIfExists('ratings');
     }
 };
