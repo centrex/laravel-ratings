@@ -15,13 +15,6 @@ You can install the package via composer:
 composer require centrex/ratings
 ```
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="ratings-migrations"
-php artisan migrate
-```
-
 You can publish the config file with:
 
 ```bash
@@ -32,21 +25,115 @@ This is the contents of the published config file:
 
 ```php
 return [
+    'users' => [
+        'table' => 'users',
+        'primary_key' => 'user_id',
+    ],
+
+    'max_rating' => 5,
+    
+    'undo_rating' => true,
 ];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="ratings-views"
-```
 
 ## Usage
 
+Add a `InterectsWithRating` trait to the Model you want to be ratable.
+
 ```php
-$ratings = new Centrex\Ratings();
-echo $ratings->echoPhrase('Hello, Centrex!');
+use Centrex\Ratings\Concerns\InterectsWithRating;
+
+class Product extends Model
+{
+    use InterectsWithRating;
+    
+    // ...
+}
 ```
+
+Now you can rate any Model.
+
+**Rate the Model**
+
+```php
+$product = Product::find(1);
+```
+
+```php
+$product->rate(4);
+```
+or
+```php
+$product->rate(score: 2);
+```
+
+**View Models' ratings**
+
+```php
+$product->ratings;
+```
+
+You can get an overall percentage of the amount of Users' who have rated a Model:
+
+Imagine you want a five-star rating system, and you have a Model that has been rated a `3` and a `5` by two Users'
+
+```php
+$product->ratingPercent(maxLength: 5);
+```
+
+This will equate to 80%. A float is returned. Changing the `maxLength` will recalculate the percentage.
+
+You could then use this percentage for the `score` attribute of the component.
+
+> **Note**
+> 
+> By default, the `maxLength` is determined by a config option. You can override this by passing a value to the method.
+
+**Unrating Models**
+
+By default, you can unrate a Model. If you don't want Users' to unrate Models, set the `undo_rating` config option to true.
+
+To unrate a Model, you can use the `unrate` method:
+
+```php
+$product->unrate();
+```
+
+The package comes with a bunch of Attributes that you can use. _The results of these are based off a single Model been rated by two Users' with a `3` and ` 5` rating._
+
+```php
+$product->averageRating; // "4.0000"
+$product->averageRatingByUser; // "5.0000"
+$product->averageSumOfUser; // 5
+$product->ratedByUsers; // 2
+$product->ratedInTotal; // 2
+$product->sumRating; // "8" 
+```
+
+### Livewire Component
+
+To see the ratings in action, you can use the Livewire component. This allows you to show the ratings on the front-end statically and let the User's rate the Model by clicking on the stars.
+
+> **Warning**
+> 
+> You must have both Tailwind CSS and Font Awesome installed, though Font Awesome can be replaced with your own preferred icon set
+
+**Use the component**
+
+```html
+<livewire:rating size="text-7xl" score="55" :model="$product" />
+```
+
+The component has customisable attributes, including:
+
+```php
+public string $iconBgColor = 'text-yellow-300';
+public string $iconFgColor = 'text-yellow-400';
+public float $score = 0;
+public string $size = 'text-base';
+public bool $static = false;
+```
+
+If you have the config for unrating a Model set to `true`, an icon shows that allows you to unrate the Model. 
 
 ## Testing
 
@@ -70,6 +157,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 - [centrex](https://github.com/centrex)
 - [All Contributors](../../contributors)
+- [cjmellor/rating](https://github.com/cjmellor/rating)
 
 ## License
 
