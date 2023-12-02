@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Centrex\Ratings;
 
-use Illuminate\Support\ServiceProvider;
 use Centrex\Ratings\Livewire\Rating;
+use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 
 class RatingsServiceProvider extends ServiceProvider

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Centrex\Rating\Concerns;
 
 use Centrex\Ratings\Exceptions\CannotBeRatedException;
@@ -9,12 +11,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Throwable;
 
 trait InterectsWithRating
 {
-    /**
-     * Get the rating for a Model.
-     */
+    /** Get the rating for a Model. */
     public function ratings(): MorphMany
     {
         return $this->morphMany(related: Rating::class, name: 'rateable');
@@ -26,7 +27,7 @@ trait InterectsWithRating
      * @return \Illuminate\Database\Eloquent\Model|false
      *
      * @throws \Centrex\Rating\Exceptions\CannotBeRatedException
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function rate(int $score): Model|bool
     {
@@ -48,9 +49,7 @@ trait InterectsWithRating
             ->delete();
     }
 
-    /**
-     * A check to see if the User has already rated the Model.
-     */
+    /** A check to see if the User has already rated the Model. */
     public function alreadyRated(): bool
     {
         return $this->ratings()->whereHasMorph(
@@ -64,7 +63,7 @@ trait InterectsWithRating
      * Get the all-round percentage of a rated Model.
      *
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function ratingPercent($maxRating = null): float|int
     {
@@ -77,9 +76,7 @@ trait InterectsWithRating
             : 0;
     }
 
-    /**
-     * The amount of times a Model has been rated by Users'.
-     */
+    /** The amount of times a Model has been rated by Users'. */
     protected function ratedByUsers(): Attribute
     {
         return Attribute::make(
@@ -91,9 +88,7 @@ trait InterectsWithRating
         );
     }
 
-    /**
-     * The amount of times a Model has been rated in total.
-     */
+    /** The amount of times a Model has been rated in total. */
     protected function ratedInTotal(): Attribute
     {
         return Attribute::make(
@@ -101,9 +96,7 @@ trait InterectsWithRating
         );
     }
 
-    /**
-     * Get the average rating for a Model
-     */
+    /** Get the average rating for a Model */
     protected function averageRating(): Attribute
     {
         return Attribute::make(
@@ -111,9 +104,7 @@ trait InterectsWithRating
         );
     }
 
-    /**
-     * Get the rating sum for a Model
-     */
+    /** Get the rating sum for a Model */
     protected function sumRating(): Attribute
     {
         return Attribute::make(
@@ -121,9 +112,7 @@ trait InterectsWithRating
         );
     }
 
-    /**
-     * Get the average rating for a Model rated by Users.
-     */
+    /** Get the average rating for a Model rated by Users. */
     protected function averageRatingByUser(): Attribute
     {
         return Attribute::make(
@@ -133,9 +122,7 @@ trait InterectsWithRating
         );
     }
 
-    /**
-     * Get the rating sum for a Model rated by Users.
-     */
+    /** Get the rating sum for a Model rated by Users. */
     protected function averageSumOfUser(): Attribute
     {
         return Attribute::make(
