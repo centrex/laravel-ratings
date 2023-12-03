@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Centrex\Rating\Concerns;
+namespace Centrex\Ratings\Concerns;
 
 use Centrex\Ratings\Exceptions\CannotBeRatedException;
 use Centrex\Ratings\Exceptions\MaxRatingException;
