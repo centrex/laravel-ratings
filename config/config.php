@@ -4,7 +4,7 @@
  * You can place your custom package configuration in here.
  */
 return [
-        /*
+    /*
     |--------------------------------------------------------------------------
     | Users' Table
     |--------------------------------------------------------------------------
@@ -18,7 +18,7 @@ return [
     |
     */
     'users' => [
-        'table' => 'users',
+        'table'       => 'users',
         'primary_key' => 'user_id',
     ],
 

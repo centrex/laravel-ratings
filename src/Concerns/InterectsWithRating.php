@@ -1,16 +1,14 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Centrex\Ratings\Concerns;
 
-use Centrex\Ratings\Exceptions\CannotBeRatedException;
-use Centrex\Ratings\Exceptions\MaxRatingException;
+use Centrex\Ratings\Exceptions\{CannotBeRatedException, MaxRatingException};
 use Centrex\Ratings\Models\Rating;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\{Builder, Model};
 use Throwable;
 
 trait InterectsWithRating
@@ -37,7 +35,7 @@ trait InterectsWithRating
         $rating = new Rating();
 
         $rating->user_id = auth()->id();
-        $rating->rating = $score;
+        $rating->rating  = $score;
 
         return $this->ratings()->save(model: $rating);
     }
@@ -55,7 +53,7 @@ trait InterectsWithRating
         return $this->ratings()->whereHasMorph(
             relation: 'rateable',
             types: '*',
-            callback: fn (Builder $query): Builder => $query->where(column: 'user_id', operator: '=', value: auth()->id())
+            callback: fn (Builder $query): Builder => $query->where(column: 'user_id', operator: '=', value: auth()->id()),
         )->exists();
     }
 
@@ -84,7 +82,7 @@ trait InterectsWithRating
                 ->whereNotNull(config(key: 'rating.users.primary_key', default: 'user_id'))
                 ->groupBy(config(key: 'rating.users.primary_key', default: 'user_id'))
                 ->pluck(config(key: 'rating.users.primary_key', default: 'user_id'))
-                ->count()
+                ->count(),
         );
     }
 
@@ -92,7 +90,7 @@ trait InterectsWithRating
     protected function ratedInTotal(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->ratings()->count()
+            get: fn () => $this->ratings()->count(),
         );
     }
 
@@ -100,7 +98,7 @@ trait InterectsWithRating
     protected function averageRating(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->ratings()->avg(column: 'rating')
+            get: fn () => $this->ratings()->avg(column: 'rating'),
         );
     }
 
@@ -108,7 +106,7 @@ trait InterectsWithRating
     protected function sumRating(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->ratings()->sum(column: 'rating')
+            get: fn () => $this->ratings()->sum(column: 'rating'),
         );
     }
 
@@ -118,7 +116,7 @@ trait InterectsWithRating
         return Attribute::make(
             get: fn () => $this->ratings()
                 ->where(config(key: 'rating.users.primary_key', default: 'user_id'), auth()->id())
-                ->avg(column: 'rating')
+                ->avg(column: 'rating'),
         );
     }
 
@@ -128,7 +126,7 @@ trait InterectsWithRating
         return Attribute::make(
             get: fn () => $this->ratings()
                 ->where(config(key: 'rating.users.primary_key', default: 'user_id'), auth()->id())
-                ->sum(column: 'rating')
+                ->sum(column: 'rating'),
         );
     }
 }

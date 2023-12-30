@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Centrex\Ratings;
 
@@ -17,13 +17,13 @@ final class RatingsServiceProvider extends ServiceProvider
          * Optional methods to load your package assets
          */
         // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'ratings');
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'ratings');
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'ratings');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         // $this->loadRoutesFrom(__DIR__.'/routes.php');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/config.php' => config_path('ratings.php'),
+                __DIR__ . '/../config/config.php' => config_path('ratings.php'),
             ], 'ratings-config');
 
             // Publishing the migrations.
@@ -57,6 +57,6 @@ final class RatingsServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'ratings');
+        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'ratings');
     }
 }
