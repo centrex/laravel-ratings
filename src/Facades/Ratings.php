@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @see \Centrex\Ratings\Ratings
  */
-class Ratings extends Facade
+final class Ratings extends Facade
 {
     protected static function getFacadeAccessor()
     {

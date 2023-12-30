@@ -6,7 +6,7 @@ namespace Centrex\Ratings\Exceptions;
 
 use Exception;
 
-class CannotBeRatedException extends Exception
+final class CannotBeRatedException extends Exception
 {
     public function __construct()
     {

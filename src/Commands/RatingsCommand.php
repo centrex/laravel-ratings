@@ -6,7 +6,7 @@ namespace Centrex\Ratings\Commands;
 
 use Illuminate\Console\Command;
 
-class RatingsCommand extends Command
+final class RatingsCommand extends Command
 {
     public $signature = 'ratings';
 

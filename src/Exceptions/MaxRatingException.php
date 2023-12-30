@@ -6,7 +6,7 @@ namespace Centrex\Ratings\Exceptions;
 
 use Exception;
 
-class MaxRatingException extends Exception
+final class MaxRatingException extends Exception
 {
     public function __construct()
     {

@@ -8,7 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
 
-class Rating extends Component
+final class Rating extends Component
 {
     public $hoverValue = 0;
 

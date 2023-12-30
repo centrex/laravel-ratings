@@ -8,10 +8,10 @@ use Centrex\Ratings\Livewire\Rating;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 
-class RatingsServiceProvider extends ServiceProvider
+final class RatingsServiceProvider extends ServiceProvider
 {
     /** Bootstrap the application services. */
-    public function boot()
+    public function boot(): void
     {
         /*
          * Optional methods to load your package assets
@@ -54,7 +54,7 @@ class RatingsServiceProvider extends ServiceProvider
     }
 
     /** Register the application services. */
-    public function register()
+    public function register(): void
     {
         // Automatically apply the package configuration
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'ratings');
