@@ -35,7 +35,7 @@ trait InterectsWithRating
         $rating = new Rating();
 
         $rating->user_id = auth()->id();
-        $rating->rating  = $score;
+        $rating->rating = $score;
 
         return $this->ratings()->save(model: $rating);
     }
