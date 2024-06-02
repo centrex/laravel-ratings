@@ -22,7 +22,7 @@ trait InterectsWithRating
     /**
      * Rate a Model.
      *
-     * @return \Illuminate\Database\Eloquent\Model|false
+     * @return Model|false
      *
      * @throws \Centrex\Rating\Exceptions\CannotBeRatedException
      * @throws Throwable
