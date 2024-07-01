@@ -17,11 +17,20 @@ return new class() extends Migration
             $table->integer('rating');
             $table->timestamps();
         });
+
+        Schema::create('reviews', function (Blueprint $table) {
+            $table->id();
+            $table->morphs('reviewable');
+            $table->foreignId((string) config(key: 'ratings.users.primary_key', default: 'user_id'))->nullable()->constrained()->nullOnDelete();
+            $table->text('review');
+            $table->timestamps();
+        });
     }
 
     /** Reverse the migrations. */
     public function down(): void
     {
         Schema::dropIfExists('ratings');
+        Schema::dropIfExists('reviews');
     }
 };
