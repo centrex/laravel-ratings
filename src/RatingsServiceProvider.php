@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace Centrex\Ratings;
+namespace Centrex\LaravelRatings;
 
-use Centrex\Ratings\Livewire\Rating;
+use Centrex\LaravelRatings\Livewire\Rating;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 

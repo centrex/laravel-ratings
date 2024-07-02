@@ -2,10 +2,10 @@
 
 declare(strict_types = 1);
 
-namespace Centrex\Ratings\Concerns;
+namespace Centrex\LaravelRatings\Concerns;
 
-use Centrex\Ratings\Exceptions\CannotBeReviewedException;
-use Centrex\Ratings\Models\Review;
+use Centrex\LaravelRatings\Exceptions\CannotBeReviewedException;
+use Centrex\LaravelRatings\Models\Review;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\{Builder, Model};

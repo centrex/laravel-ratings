@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Centrex\Ratings\Database\Factories;
+namespace Centrex\LaravelRatings\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 

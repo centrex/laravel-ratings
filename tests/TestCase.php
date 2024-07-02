@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace Centrex\Ratings\Tests;
+namespace Centrex\LaravelRatings\Tests;
 
-use Centrex\Ratings\RatingsServiceProvider;
+use Centrex\LaravelRatings\RatingsServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Centrex\Ratings\Commands;
+namespace Centrex\LaravelRatings\Commands;
 
 use Illuminate\Console\Command;
 

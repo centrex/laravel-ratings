@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Centrex\Ratings\Exceptions;
+namespace Centrex\LaravelRatings\Exceptions;
 
 use Exception;
 

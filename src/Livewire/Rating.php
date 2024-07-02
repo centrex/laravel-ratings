@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Centrex\Ratings\Livewire;
+namespace Centrex\LaravelRatings\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
