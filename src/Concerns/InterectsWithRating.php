@@ -6,9 +6,9 @@ namespace Centrex\LaravelRatings\Concerns;
 
 use Centrex\LaravelRatings\Exceptions\{CannotBeRatedException, MaxRatingException};
 use Centrex\LaravelRatings\Models\Rating;
+use Illuminate\Database\Eloquent\{Builder, Model};
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\{Builder, Model};
 use Throwable;
 
 trait InterectsWithRating
