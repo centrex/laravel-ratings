@@ -48,7 +48,9 @@ final class RatingsServiceProvider extends ServiceProvider
 
             // Registering package commands.
             // $this->commands([]);
+        }
 
+        if ($this->app->bound('livewire')) {
             Livewire::component('rating', Rating::class);
         }
     }
