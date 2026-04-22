@@ -6,8 +6,8 @@ namespace Centrex\LaravelRatings\Concerns;
 
 use Centrex\LaravelRatings\Exceptions\CannotBeReviewedException;
 use Centrex\LaravelRatings\Models\Review;
-use Illuminate\Database\Eloquent\{Builder, Model};
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Throwable;
 
@@ -29,12 +29,11 @@ trait InterectsWithReview
      */
     public function review(string $comment): Model|bool
     {
-        // a User cannot rate the same Model twice...
         throw_if(condition: $this->alreadyReviewed(), exception: CannotBeReviewedException::class);
 
         $review = new Review();
 
-        $review->user_id = auth()->id();
+        $review->{$this->userColumn()} = auth()->id();
         $review->review = $comment;
 
         return $this->reviews()->save(model: $review);
@@ -42,30 +41,47 @@ trait InterectsWithReview
 
     public function unreview(): bool
     {
+        if (auth()->id() === null) {
+            return false;
+        }
+
         return $this->reviews()
-            ->where(column: 'user_id', operator: '=', value: auth()->id())
+            ->where(column: $this->userColumn(), operator: '=', value: auth()->id())
             ->delete();
     }
 
     /** A check to see if the User has already rated the Model. */
     public function alreadyReviewed(): bool
     {
-        return $this->reviews()->whereHasMorph(
-            relation: 'reviewable',
-            types: '*',
-            callback: fn (Builder $query): Builder => $query->where(column: 'user_id', operator: '=', value: auth()->id()),
-        )->exists();
+        if (auth()->id() === null) {
+            return false;
+        }
+
+        return $this->reviews()
+            ->where($this->userColumn(), auth()->id())
+            ->exists();
     }
 
     /** The amount of times a Model has been rated by Users'. */
     protected function reviewedByUsers(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->reviews()
-                ->whereNotNull(config(key: 'rating.users.primary_key', default: 'user_id'))
-                ->groupBy(config(key: 'rating.users.primary_key', default: 'user_id'))
-                ->pluck(config(key: 'rating.users.primary_key', default: 'user_id'))
-                ->count(),
+            get: fn () => $this->relationLoaded('reviews')
+                ? $this->reviews
+                    ->whereNotNull($this->userColumn())
+                    ->pluck($this->userColumn())
+                    ->filter()
+                    ->unique()
+                    ->count()
+                : $this->reviews()
+                    ->whereNotNull($this->userColumn())
+                    ->distinct($this->userColumn())
+                    ->count($this->userColumn()),
         );
+    }
+
+    private function userColumn(): string
+    {
+        return (string) config('ratings.users.primary_key', 'user_id');
     }
 }

@@ -9,15 +9,20 @@ use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphTo};
 
 final class Review extends Model
 {
-    protected $fillable = ['review'];
+    protected $fillable = ['review', 'user_id'];
 
     public function reviewable(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function users(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(config(key: 'auth.providers.users.model'));
+    }
+
+    public function users(): BelongsTo
+    {
+        return $this->user();
     }
 }

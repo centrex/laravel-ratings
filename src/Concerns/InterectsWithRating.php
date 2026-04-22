@@ -6,8 +6,8 @@ namespace Centrex\LaravelRatings\Concerns;
 
 use Centrex\LaravelRatings\Exceptions\{CannotBeRatedException, MaxRatingException};
 use Centrex\LaravelRatings\Models\Rating;
-use Illuminate\Database\Eloquent\{Builder, Model};
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Throwable;
 
@@ -29,12 +29,12 @@ trait InterectsWithRating
      */
     public function rate(int $score): Model|bool
     {
-        // a User cannot rate the same Model twice...
+        throw_if($score < 1 || $score > $this->maxRating(), MaxRatingException::class);
         throw_if(condition: $this->alreadyRated(), exception: CannotBeRatedException::class);
 
         $rating = new Rating();
 
-        $rating->user_id = auth()->id();
+        $rating->{$this->userColumn()} = auth()->id();
         $rating->rating = $score;
 
         return $this->ratings()->save(model: $rating);
@@ -42,19 +42,25 @@ trait InterectsWithRating
 
     public function unrate(): bool
     {
+        if (auth()->id() === null) {
+            return false;
+        }
+
         return $this->ratings()
-            ->where(column: 'user_id', operator: '=', value: auth()->id())
+            ->where(column: $this->userColumn(), operator: '=', value: auth()->id())
             ->delete();
     }
 
     /** A check to see if the User has already rated the Model. */
     public function alreadyRated(): bool
     {
-        return $this->ratings()->whereHasMorph(
-            relation: 'rateable',
-            types: '*',
-            callback: fn (Builder $query): Builder => $query->where(column: 'user_id', operator: '=', value: auth()->id()),
-        )->exists();
+        if (auth()->id() === null) {
+            return false;
+        }
+
+        return $this->ratings()
+            ->where($this->userColumn(), auth()->id())
+            ->exists();
     }
 
     /**
@@ -65,9 +71,9 @@ trait InterectsWithRating
      */
     public function ratingPercent($maxRating = null): float|int
     {
-        $maxRating ??= config(key: 'rating.max_rating');
+        $maxRating ??= $this->maxRating();
 
-        throw_if(condition: $maxRating > config(key: 'rating.max_rating'), exception: MaxRatingException::class);
+        throw_if(condition: $maxRating > $this->maxRating(), exception: MaxRatingException::class);
 
         return ($this->rated_in_total * $maxRating) > 0
             ? $this->sum_rating / (($this->rated_in_total * $maxRating) / 100)
@@ -78,11 +84,17 @@ trait InterectsWithRating
     protected function ratedByUsers(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->ratings()
-                ->whereNotNull(config(key: 'rating.users.primary_key', default: 'user_id'))
-                ->groupBy(config(key: 'rating.users.primary_key', default: 'user_id'))
-                ->pluck(config(key: 'rating.users.primary_key', default: 'user_id'))
-                ->count(),
+            get: fn () => $this->relationLoaded('ratings')
+                ? $this->ratings
+                    ->whereNotNull($this->userColumn())
+                    ->pluck($this->userColumn())
+                    ->filter()
+                    ->unique()
+                    ->count()
+                : $this->ratings()
+                    ->whereNotNull($this->userColumn())
+                    ->distinct($this->userColumn())
+                    ->count($this->userColumn()),
         );
     }
 
@@ -90,7 +102,7 @@ trait InterectsWithRating
     protected function ratedInTotal(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->ratings()->count(),
+            get: fn () => $this->relationLoaded('ratings') ? $this->ratings->count() : $this->ratings()->count(),
         );
     }
 
@@ -98,7 +110,7 @@ trait InterectsWithRating
     protected function averageRating(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->ratings()->avg(column: 'rating'),
+            get: fn () => $this->relationLoaded('ratings') ? (float) $this->ratings->avg('rating') : (float) $this->ratings()->avg(column: 'rating'),
         );
     }
 
@@ -106,7 +118,7 @@ trait InterectsWithRating
     protected function sumRating(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->ratings()->sum(column: 'rating'),
+            get: fn () => $this->relationLoaded('ratings') ? $this->ratings->sum('rating') : $this->ratings()->sum(column: 'rating'),
         );
     }
 
@@ -114,9 +126,13 @@ trait InterectsWithRating
     protected function averageRatingByUser(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->ratings()
-                ->where(config(key: 'rating.users.primary_key', default: 'user_id'), auth()->id())
-                ->avg(column: 'rating'),
+            get: fn () => auth()->id() === null
+                ? 0
+                : (
+                    $this->relationLoaded('ratings')
+                        ? (float) $this->ratings->where($this->userColumn(), auth()->id())->avg('rating')
+                        : (float) $this->ratings()->where($this->userColumn(), auth()->id())->avg(column: 'rating')
+                ),
         );
     }
 
@@ -124,9 +140,23 @@ trait InterectsWithRating
     protected function averageSumOfUser(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->ratings()
-                ->where(config(key: 'rating.users.primary_key', default: 'user_id'), auth()->id())
-                ->sum(column: 'rating'),
+            get: fn () => auth()->id() === null
+                ? 0
+                : (
+                    $this->relationLoaded('ratings')
+                        ? $this->ratings->where($this->userColumn(), auth()->id())->sum('rating')
+                        : $this->ratings()->where($this->userColumn(), auth()->id())->sum(column: 'rating')
+                ),
         );
+    }
+
+    private function userColumn(): string
+    {
+        return (string) config('ratings.users.primary_key', 'user_id');
+    }
+
+    private function maxRating(): int
+    {
+        return (int) config('ratings.max_rating', 5);
     }
 }
